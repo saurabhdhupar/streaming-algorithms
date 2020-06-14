@@ -18,13 +18,13 @@ https://www.youtube.com/watch?v=s9xSfIw83tk&index=1&list=PL2SOU6wwxB0v1kQTpqpuu5
 
 class MorrisAlgorithm:
 
-    def __init__(self, seed: int = datetime.now()) -> None:
+    def __init__(self, seed: float = datetime.now().timestamp()) -> None:
         self.counter = 0
-        random.seed(seed)
+        self.random = random.Random(seed)
 
     def increment(self) -> None:
         p = pow(2 ** self.counter, -1)
-        r = random.uniform(0, 1)
+        r = self.random.uniform(0, 1)
         if p > r:
             self.counter += 1
 
