@@ -1,4 +1,5 @@
 import random
+import sys
 from distinct_count.flajolet_martin.flajolet_martin_algorithm import FlajoletMartinAlgorithm
 
 
@@ -12,7 +13,7 @@ class FlajoletMartinMeanEstimator(FlajoletMartinAlgorithm):
         self.correction_factor = 0.77351
         self.random = random.Random(seed)
         for i in range(total_estimators):
-            new_seed = self.random.randint(-214783648, 2147483647)
+            new_seed = self.random.randint(-sys.maxsize - 1, sys.maxsize - 1)
             self.estimators.append(FlajoletMartinAlgorithm(sketch_size=sketch_size,
                                                            hashing_function=hashing_function,
                                                            seed=new_seed))

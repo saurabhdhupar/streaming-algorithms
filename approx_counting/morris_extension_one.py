@@ -19,5 +19,6 @@ class MorrisPlusAlgorithm(MorrisAlgorithm):
             self.estimators[idx].increment()
 
     def approx_count(self) -> int:
-        total_sum = sum([estimator.approx_count() for estimator in self.estimators])
-        return total_sum / self.total_estimators
+        total_sum = sum([estimator.counter for estimator in self.estimators])
+        mean_val = total_sum / self.total_estimators
+        return 2 ** mean_val - 1

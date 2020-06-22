@@ -6,7 +6,7 @@ from distinct_count.flajolet_martin.flajolet_martin_extension_two import Flajole
 class FlajoletMartinMedianOfMeanEstimatorTest(unittest.TestCase):
 
     def test_flajolet_martin(self):
-        counter = FlajoletMartinMedianOfMeanEstimator(32, 200, 200, hashing_function='mmh3')
+        counter = FlajoletMartinMedianOfMeanEstimator(32, 24, 24, hashing_function='mmh3')
         for i in range(5000):
             counter.increment(i)
             if i > 0 and i % 100 == 0:

@@ -1,7 +1,6 @@
 import random
+import sys
 from statistics import median
-
-from numpy import mean
 
 from distinct_count.flajolet_martin.flajolet_martin_extension_one import FlajoletMartinMeanEstimator
 
@@ -17,7 +16,7 @@ class FlajoletMartinMedianOfMeanEstimator(FlajoletMartinMeanEstimator):
         self.estimators = []
         self.random = random.Random(seed)
         for i in range(total_estimators):
-            new_seed = self.random.randint(-214783648, 2147483647)
+            new_seed = self.random.randint(-sys.maxsize - 1, sys.maxsize - 1)
             self.estimators.append(FlajoletMartinMeanEstimator(sketch_size=sketch_size,
                                                                total_estimators=total_weak_estimators,
                                                                hashing_function=hashing_function,
