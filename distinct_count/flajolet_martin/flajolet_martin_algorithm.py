@@ -46,8 +46,12 @@ class FlajoletMartinAlgorithm(DistinctCounterEstimator):
             i = i - 1
         return cnt
 
-    def approx_distinct_count(self) -> float:
+    def get_max_value(self) -> float:
         r_index = 0
         while self.bitmap[r_index] is not False and r_index < self.sketch_size - 1:
             r_index += 1
+        return r_index
+
+    def approx_distinct_count(self) -> float:
+        r_index = self.get_max_value()
         return 2**r_index / self.correction_factor
