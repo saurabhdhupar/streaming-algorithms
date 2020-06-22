@@ -1,14 +1,15 @@
 import unittest
-from distinct_count.flajolet_martin.flajolet_martin_algorithm import FlajoletMartinAlgorithm
-from distinct_count.flajolet_martin.flajolet_martin_extension_one import FlajoletMartinMeanEstimator
-from distinct_count.flajolet_martin.flajolet_martin_extension_two import FlajoletMartinMedianOfMeanEstimator
+
+from distinct_count.flajolet_martin.flajolet_martin_extension_two import FlajoletMartinMeanOfMedianEstimator
 
 
 class FlajoletMartinMedianOfMeanEstimatorTest(unittest.TestCase):
 
     def test_flajolet_martin(self):
-        counter = FlajoletMartinMedianOfMeanEstimator(24, 24, 24)
-        for i in range(100000):
+        counter = FlajoletMartinMeanOfMedianEstimator(32, 300, 300, hashing_function='mmh3')
+        for i in range(5000):
             counter.increment(i)
-            if i % 1000 == 0:
+            if i > 0 and i % 100 == 0:
+                error = (i - counter.approx_distinct_count()) * 100 / i
                 print("Total Elements : " + str(i) + " vs Approx Count :: " + str(counter.approx_distinct_count()))
+                print("Error : " + str(error))

@@ -2,19 +2,20 @@ from datetime import datetime
 from bitarray import bitarray
 import pyhash
 import smhasher
+import mmh3
+
 
 from distinct_count.distinct_count import DistinctCounterEstimator
 
-_HASH_FUNCTIONS_ = ['murmurhash3', 'lookup3']
+_HASH_FUNCTIONS_ = ['murmurhash3', 'lookup3', 'mmh3']
 
 
 class FlajoletMartinAlgorithm(DistinctCounterEstimator):
 
     def __init__(self, sketch_size: int, seed: float = datetime.now().timestamp(),
                  hashing_function: str = 'murmurhash3') -> None:
-        self.max_trailing_zeros = 0
         self.sketch_size = sketch_size
-        self.hash_function_upper_bound = 2 ** sketch_size - 1
+        self.hash_function_upper_bound = 2**sketch_size - 1
         self.bitmap = bitarray(sketch_size)
         self.bitmap.setall(False)
         assert hashing_function in _HASH_FUNCTIONS_
@@ -25,11 +26,12 @@ class FlajoletMartinAlgorithm(DistinctCounterEstimator):
     def increment(self, element: object):
         element_str = str(element).encode('utf-8')
         if self.hashing_function == 'murmurhash3':
-            h = smhasher.murmur3_x64_128(element_str, int(self.seed)) % self.hash_function_upper_bound
+            h = smhasher.murmur3_x64_128(element_str, self.seed) % self.hash_function_upper_bound
+        elif self.hashing_function == 'mmh3':
+            h = mmh3.hash(element_str, seed=self.seed) % self.hash_function_upper_bound
         else:
             hasher = pyhash.lookup3()
             h = hasher(element_str, str(self.seed)) % self.hash_function_upper_bound
-        self.max_trailing_zeros = max(self.max_trailing_zeros, self.count_trailing_zeros(h, self.sketch_size))
         self.bitmap[self.count_trailing_zeros(h, self.sketch_size)] = True
 
     @staticmethod
@@ -46,6 +48,6 @@ class FlajoletMartinAlgorithm(DistinctCounterEstimator):
 
     def approx_distinct_count(self) -> float:
         r_index = 0
-        while self.bitmap[r_index] is not False and r_index < self.sketch_size:
+        while self.bitmap[r_index] is not False and r_index < self.sketch_size - 1:
             r_index += 1
-        return 2 ** r_index / self.correction_factor
+        return 2**r_index / self.correction_factor
