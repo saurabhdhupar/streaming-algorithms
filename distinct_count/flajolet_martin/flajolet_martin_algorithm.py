@@ -1,3 +1,4 @@
+import random
 from datetime import datetime
 from bitarray import bitarray
 import pyhash
@@ -12,7 +13,8 @@ _HASH_FUNCTIONS_ = ['murmurhash3', 'lookup3', 'mmh3']
 
 class FlajoletMartinAlgorithm(DistinctCounterEstimator):
 
-    def __init__(self, sketch_size: int, seed: float = datetime.now().timestamp(),
+    def __init__(self, sketch_size: int,
+                 seed: int = random.randint(-214783648, 2147483647),
                  hashing_function: str = 'murmurhash3') -> None:
         self.sketch_size = sketch_size
         self.hash_function_upper_bound = 2**sketch_size - 1
@@ -23,12 +25,12 @@ class FlajoletMartinAlgorithm(DistinctCounterEstimator):
         self.correction_factor = 0.77351
         self.seed = seed
 
-    def increment(self, element: object):
+    def increment(self, element: object) -> None:
         element_str = str(element).encode('utf-8')
         if self.hashing_function == 'murmurhash3':
             h = smhasher.murmur3_x64_128(element_str, self.seed) % self.hash_function_upper_bound
         elif self.hashing_function == 'mmh3':
-            h = mmh3.hash64(element_str, seed=self.seed) % self.hash_function_upper_bound
+            h = mmh3.hash(element_str, seed=self.seed) % self.hash_function_upper_bound
         else:
             hasher = pyhash.lookup3()
             h = hasher(element_str, str(self.seed)) % self.hash_function_upper_bound
